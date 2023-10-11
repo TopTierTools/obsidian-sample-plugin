@@ -1,9 +1,9 @@
 # Obsidian Sample Plugin (Yomaru)
 
-✅ husky 
-✅ bun 
-✅ bun github release workflow 
-✅ extended obsidian typescript api 
+- ✅ husky 
+- ✅ bun 
+- ✅ bun github release workflow 
+- ✅ extended obsidian typescript api 
 
 This is a sample plugin for Obsidian (https://obsidian.md).
 
