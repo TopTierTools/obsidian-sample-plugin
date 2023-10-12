@@ -8,6 +8,8 @@ import {
 	PluginSettingTab,
 	Setting,
 } from "obsidian";
+import "@total-typescript/ts-reset";
+import "@total-typescript/ts-reset/dom";
 
 // Remember to rename these classes and interfaces!
 
