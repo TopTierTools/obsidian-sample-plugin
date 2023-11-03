@@ -1,6 +1,7 @@
 import {
 	App,
 	Editor,
+	EventRef,
 	MarkdownView,
 	Modal,
 	Notice,
@@ -10,6 +11,7 @@ import {
 } from "obsidian";
 import "@total-typescript/ts-reset";
 import "@total-typescript/ts-reset/dom";
+import { MySettingManager } from "@/SettingManager";
 
 // Remember to rename these classes and interfaces!
 
@@ -22,10 +24,15 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 };
 
 export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+	settingManager: MySettingManager;
+	private eventRefs: EventRef[] = [];
 
 	async onload() {
-		await this.loadSettings();
+		// initialize the setting manager
+		this.settingManager = new MySettingManager(this);
+
+		// load the setting using setting manager
+		await this.settingManager.loadSettings();
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon(
@@ -96,18 +103,12 @@ export default class MyPlugin extends Plugin {
 		);
 	}
 
-	onunload() {}
-
-	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			await this.loadData()
-		);
-	}
-
-	async saveSettings() {
-		await this.saveData(this.settings);
+	onunload() {
+		super.onunload();
+		// unload all event ref
+		for (const eventRef of this.eventRefs) {
+			this.app.workspace.offref(eventRef);
+		}
 	}
 }
 
@@ -146,10 +147,11 @@ class SampleSettingTab extends PluginSettingTab {
 			.addText((text) =>
 				text
 					.setPlaceholder("Enter your secret")
-					.setValue(this.plugin.settings.mySetting)
+					.setValue(this.plugin.settingManager.getSettings().test)
 					.onChange(async (value) => {
-						this.plugin.settings.mySetting = value;
-						await this.plugin.saveSettings();
+						this.plugin.settingManager.updateSettings((setting) => {
+							setting.value.test = value;
+						});
 					})
 			);
 	}
